@@ -1,0 +1,7 @@
+id,comment_text,toxic,severe_toxic,obscene,threat,insult,identity_hate
+001,You are so stupid and ugly!,1,0,1,0,1,0
+002,What a wonderful day to learn something new.,0,0,0,0,0,0
+003,Go kill yourself!,1,1,1,1,1,0
+004,I totally disagree with your point.,0,0,0,0,0,0
+005,You're a worthless piece of trash.,1,1,1,0,1,0
+006,"Thank you for the help, really appreciate it!",0,0,0,0,0,0
