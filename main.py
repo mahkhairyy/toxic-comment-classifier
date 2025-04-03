@@ -11,6 +11,8 @@ import seaborn as sns
 import re
 import string
 import os
+import joblib
+joblib.dump(model, "model.pkl")
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
