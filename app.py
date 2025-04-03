@@ -2,15 +2,19 @@ import streamlit as st
 import joblib  # or pickle
 import pandas as pd
 
-# Load your trained model
-model = joblib.load("model.pkl")  # Save your model with joblib.dump()
+# Load both model and vectorizer
+model = joblib.load("model.pkl")
+vectorizer = joblib.load("vectorizer.pkl")
 
-st.title("🛡️ Toxic Comment Classifier")
-
-user_input = st.text_area("Enter a comment:")
+# Inside your Streamlit button logic
 if st.button("Classify"):
-    pred = model.predict([user_input])[0]
-    if pred == 1:
-        st.error("⚠️ Toxic Comment Detected")
+    if user_input.strip() == "":
+        st.warning("Please enter a comment.")
     else:
-        st.success("✅ Clean Comment")
+        vectorized = vectorizer.transform([user_input])
+        pred = model.predict(vectorized)[0]
+
+        if pred == 1:
+            st.error("❌ Toxic Comment")
+        else:
+            st.success("✅ Clean Comment")
