@@ -2,7 +2,7 @@ import streamlit as st
 import joblib  # or pickle
 import pandas as pd
 
-#load term mmmm hey ss
+#load term mmmm hey sss sssr
 # Load model and vectorizer
 model = joblib.load("model.pkl")
 vectorizer = joblib.load("vectorizer.pkl")
