@@ -9,7 +9,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
 # Prediction function
-def predict_toxicity(text, threshold=0.5):
+def predict_toxicity(text, threshold=0.2):
     inputs = tokenizer(text, return_tensors="pt", truncation=True)
     with torch.no_grad():
         outputs = model(**inputs)
