@@ -1,28 +1,29 @@
 import streamlit as st
-import joblib  # or pickle
-import pandas as pd
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+import torch.nn.functional as F
 
-#load term mmmm hey sss sssr
-# Load model and vectorizer
-model = joblib.load("model.pkl")
-vectorizer = joblib.load("vectorizer.pkl")
+# Load BERT model
+MODEL_NAME = "unitary/toxic-bert"
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
-st.title("🛡️ Toxic Comment Classifier")
+# Prediction function
+def predict_toxicity(text, threshold=0.5):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    probs = F.softmax(outputs.logits, dim=1)
+    toxic_score = probs[0][1].item()
+    label = "Toxic" if toxic_score > threshold else "Not Toxic"
+    return label, toxic_score
 
-# 📝 Input box FIRST
-user_input = st.text_area("Enter a comment:")
+# Streamlit UI
+st.title("🛡️ Toxic Comment Classifier (BERT)")
+comment = st.text_area("Enter a comment:")
 
-# 🖱️ Button to trigger prediction
 if st.button("Classify"):
-    if user_input.strip() == "":
-        st.warning("Please enter a comment.")
-    else:
-        # Preprocess and predict
-        vec = vectorizer.transform([user_input])
-        pred = model.predict(vec)[0]
-
-        if pred == 1:
-            st.error("❌ Toxic Comment")
-        else:
-            st.success("✅ Clean Comment")
-
+    label, score = predict_toxicity(comment)
+    color = "red" if label == "Toxic" else "green"
+    st.markdown(f"### Prediction: **:{color}[{label}]**")
+    st.caption(f"Toxicity Score: {score:.2f}")
