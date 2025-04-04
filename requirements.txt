@@ -2,3 +2,6 @@ streamlit
 scikit-learn
 pandas
 joblib
+streamlit
+transformers
+torch
