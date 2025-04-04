@@ -2,7 +2,7 @@
 
 # 📌 Project Goal:
 # Build a model that can classify comments as toxic or non-toxic using NLP techniques.
-#hey hey
+
 # 🧰 Required Libraries
 import pandas as pd
 import numpy as np
@@ -10,9 +10,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import re
 import string
-import os
-import joblib
-joblib.dump(model, "model.pkl")
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -22,10 +19,9 @@ from sklearn.metrics import classification_report, confusion_matrix
 # 📥 Load Dataset
 # Download from: https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge
 # Place the CSV in your working directory as 'train.csv'
-df = pd.read_csv('/train[1].csv')
+df = pd.read_csv('train.csv')
 
 # 📊 Quick Look at the Data
-os.makedirs("results", exist_ok=True)  # ✅ Creates the folder if it doesn't exist
 print(df.head())
 print(df.columns)
 
@@ -55,35 +51,13 @@ X_train_vec = vectorizer.fit_transform(X_train)
 X_test_vec = vectorizer.transform(X_test)
 
 # 🤖 Train Model
-model = LogisticRegression(max_iter=1000, class_weight='balanced')
+model = LogisticRegression(max_iter=1000)
 model.fit(X_train_vec, y_train)
 
 # 📈 Evaluation
 y_pred = model.predict(X_test_vec)
-
-# Classification Report
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
-
-# ✅ Print 100 Sample Predictions
-test_results = pd.DataFrame({
-    'Comment': X_test.reset_index(drop=True),
-    'Actual': y_test.reset_index(drop=True),
-    'Predicted': y_pred
-})
-sample = test_results.head(100)
-correct = (sample['Actual'] == sample['Predicted']).sum()
-accuracy = (correct / len(sample)) * 100
-
-print(f"\n✅ Sample Accuracy: {correct} out of 100 correct → {accuracy:.2f}%")
-print(test_results.head(100))  # or .to_csv(...) to save
-
-# (Optional) Save to CSV
-os.makedirs("results", exist_ok=True)
-test_results.head(100).to_csv("results/sample_predictions.csv", index=False)
-print("✅ File saved to: results/sample_predictions.csv")
-
-
 
 # 🔍 Confusion Matrix
 cm = confusion_matrix(y_test, y_pred)
