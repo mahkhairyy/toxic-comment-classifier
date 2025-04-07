@@ -1,31 +1,25 @@
-# app.py - Streamlit Toxic Comment Classifier using fine-tuned DistilBERT
 import streamlit as st
-from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
-import torch
+import joblib
 
-# Load model & tokenizer
-MODEL_PATH = "toxic-distilbert"
-tokenizer = DistilBertTokenizerFast.from_pretrained(MODEL_PATH)
-model = DistilBertForSequenceClassification.from_pretrained(MODEL_PATH)
+# Load model and vectorizer
+model = joblib.load("model.pkl")
+vectorizer = joblib.load("vectorizer.pkl")
 
-# Prediction function
-def predict(text):
-    inputs = tokenizer(text, return_tensors="pt", truncation=True)
-    with torch.no_grad():
-        outputs = model(**inputs)
-        logits = outputs.logits
-        probs = torch.softmax(logits, dim=1)
-        pred = torch.argmax(probs, dim=1).item()
-    return pred, probs[0][1].item()
+st.title("🛡️ Toxic Comment Classifier")
 
-# Streamlit UI
-st.set_page_config(page_title="DistilBERT Toxic Comment Classifier")
-st.title("🛡️ Toxic Comment Classifier (DistilBERT)")
-
+# 📝 Input box FIRST
 user_input = st.text_area("Enter a comment:")
+
+# 🖱️ Button to trigger prediction
 if st.button("Classify"):
-    label, score = predict(user_input)
-    if label == 1:
-        st.error(f"⚠️ Toxic Comment Detected (Score: {score:.2f})")
+    if user_input.strip() == "":
+        st.warning("Please enter a comment.")
     else:
-        st.success(f"✅ Clean Comment (Score: {score:.2f})")
+        # Preprocess and predict
+        vec = vectorizer.transform([user_input])
+        pred = model.predict(vec)[0]
+
+        if pred == 1:
+            st.error("❌ Toxic Comment")
+        else:
+            st.success("✅ Clean Comment")
